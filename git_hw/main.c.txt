@@ -1,0 +1,86 @@
+// Carrolls @ trine.edu
+// S_michael_carroll @ gmail.org
+
+#include <stdio.h>
+#include <stdbool.h>
+
+#define QUEUE_CAPACITY (10)
+
+int queue[(QUEUE_CAPACITY)];
+int tail = 0;
+
+bool enqueue(int given){
+    if (tail >= QUEUE_CAPACITY){
+        return false;
+    }
+    else {
+        queue[tail] = given;
+        tail ++;
+        return true;
+    }
+}
+
+bool dequeue (int* gotten){
+    if( tail == 0){
+        return false;
+    }
+    else {
+        *gotten = queue[0];
+        for (int i = 1; i < tail; i++){
+            queue[i-1] = queue[i];
+        }
+        tail --;
+        return true;
+    }
+}
+
+
+bool do_the_thing(){
+    static int n = 0;
+    n++;
+    if (n%10 != 0){
+        return enqueue(n);
+    }
+    else {
+        enqueue(n);
+        return false;
+    }
+}
+
+void follow_up(){
+    int msg;
+    dequeue(&msg);
+    printf("Found message %d.\n", msg);
+}
+
+
+
+
+int main(void)
+{
+    int error_code = 0;
+
+    for (int n = 0; n < 3*QUEUE_CAPACITY; n ++){
+        bool ok = enqueue(n+1000);
+        if (!ok) error_code |= 0x0001;
+    }
+
+    for (int n = 0; n < (QUEUE_CAPACITY>>1); n++){
+        int retrieved = 0;
+        bool ok = dequeue(&retrieved);
+        if (!ok) error_code |= 0x0002;
+    }
+    for (int n = 0; n < 3*QUEUE_CAPACITY; n ++){
+        bool ok = enqueue(n+1000);
+        if (!ok) error_code |= 0x0004;
+    }
+
+    for (int n = 0; n < (QUEUE_CAPACITY); n++){
+        int retrieved = 0;
+        bool ok = dequeue(&retrieved);
+        if (!ok) error_code |= 0x0008;
+    }
+
+    printf("Error code expected = 0x05. FOUND: %x", error_code);
+}
+
